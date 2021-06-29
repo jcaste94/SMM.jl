@@ -111,7 +111,9 @@ function get_stdErrors(m::MProb,p::Union{Dict,OrderedDict};reps=300)
 	# first get weighting matrix 
 	W = Diagonal([v[:weight] for (k,v) in m.moments])
 	println("size of Weight W = $(size(W))")
+	
 	SE = pinv(J *  W * J') * (J * W * Σ * W * J') * pinv(J * W * J') 
+	
 	return Dict(zip(collect(keys(p)),sqrt.(diag(SE))))
 
 end
