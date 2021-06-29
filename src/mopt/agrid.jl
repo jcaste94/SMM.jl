@@ -1,7 +1,7 @@
 # smart grid search
 
 module AGrids
-
+#=
 type Vertex
 
 	x      ::Array{Float64,1}
@@ -19,6 +19,7 @@ type Vertex
 	end
 end
 
+
 type AGrid
 	points     :: Array{Vertex,1}
 
@@ -28,7 +29,7 @@ type AGrid
 		return this
 	end
 end
-
+=#
 function findClose(ag::AGrid,x)
 	best_dist = Inf
 	sbest = P[1]

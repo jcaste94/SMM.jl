@@ -53,7 +53,8 @@ export addParam!,
        restart!,
        extendBGPChain!,
        run!,
-       mean,median,CI
+       mean,median,CI,
+       FD_gradient, getSigma
 
 # create a random device that is immune to seeds
 const RAND = RandomDevice()
