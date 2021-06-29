@@ -44,25 +44,27 @@ function FD_gradient(m::MProb,p::Union{Dict,OrderedDict};step_perc=0.01,diff_met
 		v = ip[2]
 		h = 0.0
 		pp = deepcopy(p)
+		
 		if use_range
 			h = rs[k] * step_perc
 		else
 			h = v * step_perc
 		end
+		
 		if diff_method == :forward
 			pp[k] = v + h
 			xx = evaluateObjective(m,pp)
-			smm = collect(values(filter((x,y)->in(x,mnames),xx.simMoments)))
+			smm = collect(values(filter(x->!in(x,mnames),xx.simMoments)))
 			Dict(:p => k, :smm => (smm .- gp) / h)
 		elseif diff_method == :central
 			pp[k] = v + 0.5*h
 			xx = evaluateObjective(m,pp)
-			fw = collect(values(filter((x,y)->in(x,mnames),xx.simMoments)))
+			fw = collect(values(filter(x->!in(x,mnames),xx.simMoments)))
 			println(fw)
 
 			pp[k] = v - 0.5*h
 			xx = evaluateObjective(m,pp)
-			bw = collect(values(filter((x,y)->in(x,mnames),xx.simMoments)))
+			bw = collect(values(filter(x->!in(x,mnames),xx.simMoments)))
 			println(bw)
 
 			Dict(:p => k, :smm => (fw .- bw) / h)
@@ -70,10 +72,12 @@ function FD_gradient(m::MProb,p::Union{Dict,OrderedDict};step_perc=0.01,diff_met
 			error("only :central and :foward implemented")
 		end
 	end
+	
 	d = Dict()
 	for e in rows
        d[e[:p]] = e[:smm]
     end
+	
 	row = 0
 	for (k,v) in d
 		row += 1
