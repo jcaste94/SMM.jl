@@ -31,7 +31,7 @@ function FD_gradient(m::MProb,p::Union{Dict,OrderedDict};step_perc=0.01,diff_met
 	# get g(p)
     ev = evaluateObjective(m,p)
     mnames = collect(keys(m.moments))
-    smm = filter((x,y)->in(x,mnames),ev.simMoments)
+    smm = filter(x->!in(x,mnames),ev.simMoments)
 	gp = collect(values(smm))
 	D = zeros(length(p),length(gp))
 
@@ -125,20 +125,22 @@ end
 Computes var-cov matrix of simulated data. This requires to *unseed* the random shock sequences in the objective function (to generate randomly different moments in each run). Argument `reps` controls how many samples of different moment functions should be taken.
 """
 function getSigma(m::MProb,p::Union{Dict,OrderedDict},reps::Int)
-    ev = [Eval(m,p) for i in 1:reps]
+    
+	ev = [Eval(m,p) for i in 1:reps]
     mnames = collect(keys(m.moments))
-    for e in ev
+    
+	for e in ev
         e.options[:noseed] = true
     end
-    if length(workers()) > 1
+    
+	if length(workers()) > 1
         evs = pmap(x->evaluateObjective(m,x),ev)
     else
         evs = map(x->evaluateObjective(m,x),ev)
     end
-    N = length(evs)
-    d = DataFrame()
-    
-    for (k,v) in filter((x,y)->in(x,mnames),evs[1].simMoments)
+   
+	d = DataFrame()
+    for (k,v) in filter(x->!in(x,mnames),evs[1].simMoments)
         d[k] = eltype(v)[evs[i].simMoments[k] for i in 1:reps]
     end
     
