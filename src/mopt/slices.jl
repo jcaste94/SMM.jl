@@ -209,10 +209,10 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
                 end
             end
             sort!(df0,[:iter, :param, :val_idx])
-            dout[!,:history] = df0
+            dout[:history] = df0
 
             if takes > 60
-                JLD2.@save filename dout
+                JLD2.@save filename dout m
             end
 
             dvec[pp] = cur_param[pp] - bestp[pp]
@@ -233,11 +233,13 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
         # println(bestp)
         delta = norm(collect(values(dvec)))
     end
+
     println()
     @info "converged after $iter iterations"
-    t1 = round((time()-t0)/60)
+    # t1 = round((time()-t0)/60)
     # @info(logger,"done after $t1 minutes")
     JLD2.@save filename dout
+    
     return dout
 end
 
