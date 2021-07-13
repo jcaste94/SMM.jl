@@ -212,7 +212,7 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
             dout[:history] = df0
 
             if takes > 60
-                JLD2.@save filename dout m
+                JLD2.@save filename dout
             end
 
             dvec[pp] = cur_param[pp] - bestp[pp]
