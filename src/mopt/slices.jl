@@ -150,6 +150,7 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
             cur_param = deepcopy(bestp)
             ev = Eval(m,cur_param)
 
+            # evaluate objective function 
             if parallel
                 takes = @elapsed vv = pmap( range(bb[:lb], stop = bb[:ub], length = npoints) ) do pval
                     ev2 = deepcopy(ev)
@@ -166,15 +167,14 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
                 end
             end
 
-            return vv
             allvals = Dict()
-            #=
+
             # find best parameter value
             minv = Inf
             bestp = deepcopy(ev.params)
             for iv in 1:length(vv)
                 if (typeof(vv[iv]) <: Exception)
-                        # warn("exception received. value not stored.")
+                    # warn("exception received. value not stored.")
                     allvals[iv] = Dict(:p => "Exception", :value => NaN)
                 else
                     val = vv[iv]
@@ -192,6 +192,9 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
                 # println("best value so far:")
                 # print(json(dout[:best],4))
             end
+
+            return allvals
+            #=
             for (k,v) in allvals
                 if (nrow(df0)) > 0
                     x = DataFrame(iter=iter,param=pp,val_idx=k)
