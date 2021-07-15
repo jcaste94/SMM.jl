@@ -213,7 +213,6 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
             end
             sort!(df0,[:iter, :param, :val_idx])
             dout[:history] = df0
-            return dout
 
             if takes > 60
                 JLD2.@save filename dout
@@ -222,7 +221,7 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
             dvec[pp] = cur_param[pp] - bestp[pp]
         end  # end all values in ranges
 
-        #=
+    
         # update search ranges
         # maintain range boundaries
         if !isnothing(update)
@@ -237,7 +236,7 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
         # println(cur_param)
         # println(bestp)
         delta = norm(collect(values(dvec)))
-        =#
+        
     end
 
     println()
