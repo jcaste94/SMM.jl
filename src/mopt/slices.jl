@@ -166,9 +166,9 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
                 end
             end
 
-            return ev2
+            return vv
             allvals = Dict()
-
+            #=
             # find best parameter value
             minv = Inf
             bestp = deepcopy(ev.params)
@@ -218,8 +218,10 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
             end
 
             dvec[pp] = cur_param[pp] - bestp[pp]
+            =#
         end  # end all values in ranges
 
+        #=
         # update search ranges
         # maintain range boundaries
         if !isnothing(update)
@@ -234,13 +236,14 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
         # println(cur_param)
         # println(bestp)
         delta = norm(collect(values(dvec)))
+        =#
     end
 
     println()
     @info "converged after $iter iterations"
     # t1 = round((time()-t0)/60)
     # @info(logger,"done after $t1 minutes")
-    JLD2.@save filename dout
+    # JLD2.@save filename dout
     
     return dout
 end
