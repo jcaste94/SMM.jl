@@ -241,7 +241,7 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
     println()
     t1 = round((time()-t0)/60)
     @info "converged after $iter iterations"
-    @info(logger, "done after $t1 minutes")
+    @info "it took $t1 minutes"
     JLD2.@save filename dout
     
     return dout
