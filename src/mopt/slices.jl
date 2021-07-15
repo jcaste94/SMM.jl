@@ -193,8 +193,6 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
                 # print(json(dout[:best],4))
             end
 
-            return allvals
-            #=
             for (k,v) in allvals
                 if (nrow(df0)) > 0
                     x = DataFrame(iter=iter,param=pp,val_idx=k)
@@ -204,24 +202,24 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
                     x[!,:value] .= v[:value]
                     append!(df0,x)
                 else
-                    df0[!,:iter] .= iter
-                    df0[!,:param] .= pp
-                    df0[!,:val_idx] .= k
+                    df0[!,:iter] = [iter]
+                    df0[!,:param] = [pp]
+                    df0[!,:val_idx] = [k]
                     for (ki,vi) in v[:p]
-                        df0[!,ki] .= vi
+                        df0[!,ki] = [vi]
                     end
-                    df0[!,:value] .= v[:value]
+                    df0[!,:value] = [v[:value]]
                 end
             end
             sort!(df0,[:iter, :param, :val_idx])
             dout[:history] = df0
+            return dout
 
             if takes > 60
                 JLD2.@save filename dout
             end
 
             dvec[pp] = cur_param[pp] - bestp[pp]
-            =#
         end  # end all values in ranges
 
         #=
