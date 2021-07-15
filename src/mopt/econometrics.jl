@@ -118,7 +118,7 @@ function get_stdErrors(m::MProb,p::Union{Dict,OrderedDict};reps=300)
 	
 	SE = pinv(J *  W * J') * (J * W * Σ * W * J') * pinv(J * W * J') 
 	
-	return Dict(zip(collect(keys(p)),sqrt.(diag(SE))))
+	return OrderedDict(zip(collect(keys(p)),sqrt.(diag(SE))))
 
 end
 
