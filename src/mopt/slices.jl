@@ -137,6 +137,7 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
 
     prog = ProgressThresh(tol, "Minimizing norm:")
     while delta > tol
+        
         ProgressMeter.update!(prog, delta)
         # println("current search range:")
         # print(json(ranges,4))
@@ -165,6 +166,7 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
                 end
             end
 
+            return ev2
             allvals = Dict()
 
             # find best parameter value
