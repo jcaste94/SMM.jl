@@ -111,7 +111,7 @@ Let ``\\theta \\in \\mathbb{R}^K`` be the parameter vector of objective function
 
 The algorithm runs until a convergence criterion is met; here we stop at cycle ``n`` if the norm of the distance between ``\\theta^{(n-1)}`` and ``\\theta^{(n)}`` is less than `tol`.
 """
-function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing, filename="trace.jld2")
+function optSlices(m::MProb,npoints::Int;parallel::Bool=false,tol::Float64=1.0e-5, max_iter::Int64=100, update::Union{Nothing,Float64}=nothing, filename::String="trace.jld2")
 
     t0 = time()
     # res = Slice(m.initial_value, m.moments)
