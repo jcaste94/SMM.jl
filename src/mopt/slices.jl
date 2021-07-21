@@ -238,7 +238,7 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
             break
         end
         if iter >= max_iter
-            @warn "CCD reached its maximum iteration : $max_iter"
+            @warn "Cyclic Coordinate Descent reached its maximum iteration : $max_iter"
             break
         end
             
