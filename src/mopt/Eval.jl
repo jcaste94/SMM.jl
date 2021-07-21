@@ -182,9 +182,9 @@ param(ev::Eval,s::Symbol)              = ev.params[s]
 paramd(ev::Eval)                       = ev.params
 
 
-dataMoment(ev::Eval,ll::Array{Symbol,1})  = Float64[ ev.dataMoments[i] for i in ll]
-dataMoment(ev::Eval,s::Symbol)         = ev.dataMoments[s]
-dataMoment(ev::Eval)                      = dataMoment(ev,collect(keys(ev.dataMoments)))
+dataMoment(ev::Eval,ll::Array{Symbol,1}) = Float64[ ev.dataMoments[i] for i in ll]
+dataMoment(ev::Eval,s::Symbol)           = ev.dataMoments[s]
+dataMoment(ev::Eval)                     = dataMoment(ev,collect(keys(ev.dataMoments)))
 
 
 """
@@ -195,14 +195,14 @@ Obtain all data momoents as dict
 dataMomentd(ev::Eval) = ev.dataMoments
 
 dataMomentW(ev::Eval)                      = dataMomentW(ev,collect(keys(ev.dataMomentsW)))
-dataMomentW(ev::Eval,ll::Array{Symbol,1}) = Float64[ ev.dataMomentsW[i] for i in ll]
-dataMomentW(ev::Eval,s::Symbol)= ev.dataMomentsW[s]
+dataMomentW(ev::Eval,ll::Array{Symbol,1})  = Float64[ ev.dataMomentsW[i] for i in ll]
+dataMomentW(ev::Eval,s::Symbol)            = ev.dataMomentsW[s]
 
 
 """
 Obtain all moment weights as dict
 """
-dataMomentWd(ev::Eval)                  = ev.dataMomentsW
+dataMomentWd(ev::Eval) = ev.dataMomentsW
 
 
 function fill(p::Any,ev::Eval)

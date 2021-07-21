@@ -118,52 +118,51 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
     # we want to iterate over each parameters, 
     # and compute a linerange
 
-    ranges = m.params_to_sample
-    cur_param = m.initial_value
-    bestp = deepcopy(m.initial_value)
-    dvec = deepcopy(cur_param)
-    for (k,v) in dvec
-        v = Inf
+    # housekeeping: 
+    ranges = m.params_to_sample 
+    cur_params = m.initial_value    
+
+    # pre-allocations:
+    bestp = deepcopy(m.initial_value) 
+    dvec  = deepcopy(cur_params)   
+    for k in keys(dvec)
+        dvec[k] = Inf
     end
+    dout = Dict()       # output 
+    df0  = DataFrame()  # history data.frame
 
-    # output
-    dout = Dict()
-
-    # history data.frame
-    df0 = DataFrame()
-
-    delta = Inf
+    # cyclic coordinate descent: 
     iter = 0
-
     prog = ProgressThresh(tol, "Minimizing norm:")
-    while delta > tol
-        
-        ProgressMeter.update!(prog, delta)
+
+    while true
+
         # println("current search range:")
         # print(json(ranges,4))
         iter += 1
 
         for (pp,bb) in ranges
-            # println("   working on $pp")
+            
+            # println(" working on parameter $pp")
         
             # initialize eval
-            cur_param = deepcopy(bestp)
-            ev = Eval(m,cur_param)
+            cur_params = deepcopy(bestp)
+            ev = Eval(m,cur_params)
 
             # evaluate objective function 
             if parallel
-                takes = @elapsed vv = pmap( range(bb[:lb], stop = bb[:ub], length = npoints) ) do pval
+                takes = @elapsed vv = pmap( range(bb[:lb], bb[:ub], length = npoints) ) do pval
                     ev2 = deepcopy(ev)
                     ev2.params[pp] = pval
                     ev2 = evaluateObjective(m,ev2)
-                    return(ev2)
+                    return ev2
                 end
             else
-                takes = @elapsed vv = map( range(bb[:lb], stop = bb[:ub], length = npoints) ) do pval
+                takes = @elapsed vv = map( range(bb[:lb], bb[:ub], length = npoints) ) do pval
                     ev2 = deepcopy(ev)
                     ev2.params[pp] = pval
                     ev2 = evaluateObjective(m,ev2)
-                    return(ev2)
+                    return ev2
                 end
             end
 
@@ -174,19 +173,18 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
             bestp = deepcopy(ev.params)
             for iv in 1:length(vv)
                 if (typeof(vv[iv]) <: Exception)
-                    # warn("exception received. value not stored.")
+                    @warn "exception received. value not stored."
                     allvals[iv] = Dict(:p => "Exception", :value => NaN)
                 else
+                    
                     val = vv[iv]
                     allvals[iv] = Dict(:p => val.params, :value => val.value)
-                    # println("good value? $(isfinite(val.value) && val.value < minv)")
+
                     if isfinite(val.value) && val.value < minv
                         minv = val.value
                         bestp = deepcopy(val.params)
                         dout[:best] = Dict(:p => val.params, :value => val.value)
                         # println("best value for $pp is $minv")
-                    # else
-                    #     dout[:best] = iter > 2 ? dout[:best] : Dict(:p => "Exception", :value => NaN)
                     end
                 end
                 # println("best value so far:")
@@ -219,11 +217,11 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
             end
 
             dvec[pp] = cur_param[pp] - bestp[pp]
+        
         end  # end all values in ranges
 
     
-        # update search ranges
-        # maintain range boundaries
+        # update search ranges:
         if !isnothing(update)
             for (k,v) in bestp
                 r = (ranges[k][:ub] - ranges[k][:lb])/2
@@ -233,9 +231,17 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
             @debug "search ranges updated to $ranges"
         end
 
-        # println(cur_param)
-        # println(bestp)
+        # check convergence:
         delta = norm(collect(values(dvec)))
+        ProgressMeter.update!(prog, delta)
+        if delta < tol
+            break
+        end
+        if iter >= max_iter
+            @warn "CCD reached its maximum iteration : $max_iter"
+            break
+        end
+            
     end
 
     println()
