@@ -216,7 +216,7 @@ function optSlices(m::MProb,npoints::Int;parallel=false,tol=1e-5,update=nothing,
                 JLD2.@save filename dout
             end
 
-            dvec[pp] = cur_param[pp] - bestp[pp]
+            dvec[pp] = cur_params[pp] - bestp[pp]
         
         end  # end all values in ranges
 
